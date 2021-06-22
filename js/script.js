@@ -903,40 +903,62 @@ function addAttrNumSlide(sliderSelector, attrSelector, attrName) {
 
 
 // Footer
-// для добавление удаления калссов в элементы футер меню
-const objFooterMenu = {
-	// селектор элемента нажатие на который добавляет класса 
-	selectorIni: `.column-menu__name`,
-	// селектор предка всех элементов  к которым идет  добавление класса, может быь равен selectorIni
-	selectorParent: `.column-menu`,
-	// селекторы элемнентов к которым добавляем класс
-	selectorAddClass: [
-		`.column-menu__name`,
+
+
+let objFM = new FooterMenu(`.column-menu__name`,
+	`.column-menu`,
+	[`.column-menu__name`,
 		`.column-menu__links`,
 		`.column-menu__social-content`,
-		`.cross`,
 	],
-	// селекторы элементов нажатеи на котрые удалает класс
-	selectorRemoveIni: [
-		`.cross`, //добавляется в документ после selectorIni
-		`.column-menu__link`,
-		`.column-menu__social img`,
+	[`.column-menu__link`,
+		`.column-menu__social`,
 	],
+	`_active`,
+	`_lock`,
+	767.98,
+);
+
+objFM.addSpan();
+objFM.toggleListerIsMedia();
+
+//-------------------------------------------------
+// для добавление удаления калссов в элементы футер меню
+function FooterMenu(
+	// селектор элемента нажатие на который добавляет класса 
+	selectorIni,
+	// селектор предка всех элементов  к которым идет  добавление класса, может быь равен selectorIni
+	selectorParent,
+	// селекторы элемнентов к которым добавляем класс(масcив)
+	selectorAddClass,
+	// селекторы элементов нажатеи на котрые удалает класс(масcив)
+	selectorRemoveIni,
 	// добовляемы класс к элементам
-	classAddClass: `_active`,
+	classAddClass,
 	// добовляемы класс к body 
-	classAddClassBody: `_lock`,
+	classAddClassBody,
 	//ширина экрана при которой устанвлтвются(меньше) либо убираются(больше) слуштели события на selectorIni
-	maxWidth: 767.98,
+	maxWidth,
+) {
+	this.selectorIni = selectorIni;
+	this.selectorParent = selectorParent;
+	this.selectorAddClass = selectorAddClass;
+	this.selectorRemoveIni = selectorRemoveIni;
+	this.selectorRemoveIni.splice(0, 0, `.cross`);//добавляется в документ после selectorIni
+	this.classAddClass = classAddClass;
+	this.classAddClassBody = classAddClassBody;
+	this.maxWidth = maxWidth;
+	this.selectorAddClass.push(this.selectorRemoveIni[0]);
+
 	// добавляет элемент с классом selectorRemoveIni[0] + span внутри  после selectorIni (для крестика закрытия) 
-	addSpan() {
+	this.addSpan = function () {
 		document.querySelectorAll(this.selectorIni).forEach(elem => {
 			elem.insertAdjacentHTML('afterend', `<div class="${this.selectorRemoveIni[0].slice(1)}"><span></span></div>`);
 		});
-	},
+	};
 	//устанвлтвются(меньше maxWidth) либо убираются(больше maxWidth) слуштели события на selectorIni
 
-	toggleListerIsMedia() {
+	this.toggleListerIsMedia = function () {
 		const mediaQuery = window.matchMedia(`(max-width: ${this.maxWidth}px)`);
 		const elem = document.querySelectorAll(this.selectorIni);
 		const selector = this;
@@ -973,9 +995,10 @@ const objFooterMenu = {
 				selector.removeActiveClass(selector);
 			});
 		});
-	},
+	};
+
 	// добавляет классы к selectorAddClass + body 
-	addActiveClass(elem, {
+	this.addActiveClass = function (elem, {
 		selectorParent: parent,
 		selectorAddClass: selectoToAdd,
 		classAddClass: active,
@@ -986,9 +1009,10 @@ const objFooterMenu = {
 			el && el.classList.add(active);
 		});
 		document.querySelector('body').classList.add(bodyLock);
-	},
+	};
+
 	// удаляет классы к selectorAddClass + body 
-	removeActiveClass({
+	this.removeActiveClass = function ({
 		selectorAddClass: selector,
 		classAddClass: active,
 		classAddClassBody: bodyLock,
@@ -1000,13 +1024,8 @@ const objFooterMenu = {
 			elem.classList.remove(active);
 		});
 		document.querySelector('body').classList.remove(bodyLock);
-	},
-};
-//---------------------------------------------------
-objFooterMenu.addSpan();
-objFooterMenu.toggleListerIsMedia();
-
-
+	};
+}
 
 
 
